@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Proximate — Create Profile</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --accent: #6c63ff;
+      --bg: #000010;
+      --muted: #aaa;
+      --input-bg: rgba(255,255,255,0.06);
+      --input-border: rgba(108, 99, 255, 0.4);
+      --input-focus: rgba(108, 99, 255, 0.9);
+      --input-color: #f5f5ff;
+      --error-color: #ff4d4d;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      font-family: "Poppins", sans-serif;
+      color: var(--input-color);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      width: 90%;
+      max-width: 380px;
+      text-align: center;
+      padding: 20px 0 40px;
+    }
+
+    h1 {
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .instruction {
+      font-size: 14px;
+      color: var(--muted);
+      margin-bottom: 25px;
+      line-height: 1.4;
+      padding: 0 10px;
+    }
+
+    .form-step {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      transition: opacity 0.3s ease;
+    }
+
+    .form-step.active {
+      display: flex;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      max-width: 280px;
+      padding: 12px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--input-border);
+      background: var(--input-bg);
+      color: var(--input-color);
+      font-size: 15px;
+      outline: none;
+      transition: border 0.3s, background 0.3s;
+    }
+
+    input::placeholder, select option[value=""], textarea::placeholder {
+      color: var(--muted);
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--input-focus);
+      background: rgba(108, 99, 255, 0.12);
+    }
+
+    select:invalid { color: var(--muted); }
+    select:valid { color: var(--input-color); }
+
+    input.filled, textarea.filled { color: var(--input-color); }
+
+    textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+
+    .error {
+      border-color: var(--error-color) !important;
+    }
+
+    .error-msg {
+      font-size: 12px;
+      color: var(--error-color);
+      text-align: left;
+      width: 100%;
+      max-width: 280px;
+      margin-top: -8px;
+      margin-bottom: 8px;
+    }
+
+    .button-row {
+      width: 100%;
+      max-width: 280px;
+      display: flex;
+      justify-content: space-between;
+      margin-top: 28px;
+    }
+
+    .button-row a, .button-row button {
+      color: var(--accent);
+      text-decoration: underline;
+      font-weight: 600;
+      font-size: 15px;
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 0;
+    }
+
+    .profile-pic-wrapper {
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      background: var(--input-bg);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-top: 40px;
+      overflow: hidden;
+      cursor: pointer;
+      border: 2px dashed var(--accent);
+      transition: 0.3s;
+    }
+
+    .profile-pic-wrapper:hover {
+      background: rgba(108, 99, 255, 0.1);
+    }
+
+    .profile-pic-wrapper img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+    }
+
+    .add-icon {
+      font-size: 32px;
+      color: var(--accent);
+    }
+
+    /* Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 999;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.75);
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background-color: var(--bg);
+      padding: 30px 20px;
+      border-radius: 15px;
+      text-align: center;
+      max-width: 320px;
+      margin: 20px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.5);
+      animation: fadeIn 0.3s ease;
+    }
+
+    .modal-content h2 {
+      margin-bottom: 20px;
+      font-size: 20px;
+      color: var(--input-color);
+    }
+
+    .modal-content button {
+      background-color: var(--accent);
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    @keyframes fadeIn {
+      from {opacity: 0; transform: translateY(-20px);}
+      to {opacity:1; transform: translateY(0);}
+    }
+
+    @media (max-width: 380px) {
+      h1 { font-size: 22px; }
+      input, select, textarea { font-size: 14px; padding: 10px; }
+      .profile-pic-wrapper { width: 140px; height: 140px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Step 1 -->
+    <div class="form-step step1 active">
+      <div class="profile-pic-wrapper" id="profilePic">
+        <div class="add-icon">＋</div>
+      </div>
+      <h1>Create Your Profile</h1>
+      <p class="instruction">Add a photo and tell others a bit about yourself to get started.</p>
+
+      <input type="text" id="username" placeholder="Your Name" maxlength="25" required>
+      <div class="error-msg" id="nameError"></div>
+
+      <input type="text" id="dob" placeholder="Date of Birth" onfocus="this.type='date'" onblur="if(!this.value)this.type='text'" required>
+      <div class="error-msg" id="dobError"></div>
+
+      <select id="gender" required>
+        <option value="" disabled selected>Gender</option>
+        <option>Male</option>
+        <option>Female</option>
+        <option>Non-Binary</option>
+        <option>Other</option>
+      </select>
+      <div class="error-msg" id="genderError"></div>
+
+      <select id="maritalStatus" required>
+        <option value="" disabled selected>Marital Status</option>
+        <option>Single</option>
+        <option>Married</option>
+        <option>Divorced</option>
+        <option>It's Complicated</option>
+        <option>Other</option>
+      </select>
+
+      <div class="button-row">
+        <span></span>
+        <a href="#" id="nextBtn">Next ›</a>
+      </div>
+    </div>
+
+    <!-- Step 2 -->
+    <div class="form-step step2">
+      <h1>Create Your Profile</h1>
+      <p class="instruction">Complete your profile by adding a few more details about yourself.</p>
+
+      <input type="text" id="languages" placeholder="Languages you speak">
+      <input type="text" id="occupation" placeholder="Occupation">
+      <input type="text" id="interests" placeholder="Interests">
+      <textarea id="bio" placeholder="Write a short bio about yourself..."></textarea>
+
+      <div class="button-row">
+        <a href="#" id="backBtn">‹ Back</a>
+        <button id="submitBtn">Submit</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal" id="successModal">
+    <div class="modal-content">
+      <h2>Congratulations.<br>Your Profile has been successfully created.</h2>
+      <button id="proximateBtn">Proximate</button>
+    </div>
+  </div>
+
+  <script>
+    const profilePic = document.getElementById('profilePic');
+    let profileFile = null;
+
+    profilePic.addEventListener('click', () => {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = 'image/*';
+      input.onchange = e => {
+        profileFile = e.target.files[0];
+        const reader = new FileReader();
+        reader.onload = () => {
+          profilePic.innerHTML = `<img src="${reader.result}" alt="Profile Photo">`;
+        };
+        reader.readAsDataURL(profileFile);
+      };
+      input.click();
+    });
+
+    document.querySelectorAll('input, textarea').forEach(el => {
+      el.addEventListener('input', () => {
+        if (el.value.trim() !== '') el.classList.add('filled');
+        else el.classList.remove('filled');
+      });
+    });
+
+    const step1 = document.querySelector('.step1');
+    const step2 = document.querySelector('.step2');
+    const username = document.getElementById('username');
+    const dob = document.getElementById('dob');
+    const gender = document.getElementById('gender');
+
+    const nameError = document.getElementById('nameError');
+    const dobError = document.getElementById('dobError');
+    const genderError = document.getElementById('genderError');
+
+    function calculateAge(birthDate) {
+      const today = new Date();
+      const birth = new Date(birthDate);
+      let age = today.getFullYear() - birth.getFullYear();
+      const m = today.getMonth() - birth.getMonth();
+      if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) age--;
+      return age;
+    }
+
+    document.getElementById('nextBtn').addEventListener('click', e => {
+      e.preventDefault();
+      [username, dob, gender].forEach(f => f.classList.remove('error'));
+      nameError.textContent = dobError.textContent = genderError.textContent = '';
+      let valid = true;
+
+      if (!username.value.trim()) {
+        username.classList.add('error');
+        nameError.textContent = 'Name is required';
+        valid = false;
+      }
+      if (!dob.value) {
+        dob.classList.add('error');
+        dobError.textContent = 'Date of Birth is required';
+        valid = false;
+      } else if (calculateAge(dob.value) < 18) {
+        dob.classList.add('error');
+        dobError.textContent = 'You must be at least 18 years old';
+        valid = false;
+      }
+      if (!gender.value) {
+        gender.classList.add('error');
+        genderError.textContent = 'Gender is required';
+        valid = false;
+      }
+      if (!valid) return;
+
+      step1.classList.remove('active');
+      step2.classList.add('active');
+      window.scrollTo(0,0);
+    });
+
+    document.getElementById('backBtn').addEventListener('click', e => {
+      e.preventDefault();
+      step2.classList.remove('active');
+      step1.classList.add('active');
+      window.scrollTo(0,0);
+    });
+
+    // Submit and show modal
+    const submitBtn = document.getElementById('submitBtn');
+    const modal = document.getElementById('successModal');
+    const proximateBtn = document.getElementById('proximateBtn');
+
+    submitBtn.addEventListener('click', e => {
+      e.preventDefault();
+      modal.style.display = 'flex';
+    });
+
+    proximateBtn.addEventListener('click', () => {
+      modal.style.display = 'none';
+      window.location.href = 'dashboard.html'; // Replace with your main app page
+    });
+  </script>
+</body>
+</html>

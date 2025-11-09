@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Proximate — Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --accent:#6c63ff;
+    --bg:#000010;
+    --muted:#aaa;
+    --text:#f5f5ff;
+    --footer-bg:#1a1b29;
+    --footer-active:#6c63ff;
+    --footer-inactive:#aaa;
+    --male:#4285F4;
+    --female:#FF4D85;
+    --nonbinary:#B74DFF;
+    --other:#34A853;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;font-family:'Poppins',sans-serif;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%;background:var(--bg);color:var(--text);overflow:hidden}
+  #map{position:absolute;inset:0;z-index:1}
+
+  /* DOM radar element */
+  #radar {
+    position:absolute;
+    transform: translate(-50%,-50%);
+    border-radius:50%;
+    background: rgba(255,77,133,0.08);
+    border: 2px solid rgba(255,77,133,0.45);
+    pointer-events:none;
+    z-index:6;
+    animation: pulse 2500ms infinite ease-out;
+    display:none;
+  }
+  @keyframes pulse{
+    0%{transform:translate(-50%,-50%) scale(0.3); opacity:0.9}
+    70%{transform:translate(-50%,-50%) scale(1.5); opacity:0.12}
+    100%{transform:translate(-50%,-50%) scale(0.3); opacity:0}
+  }
+
+  /* top bar */
+  .top-bar{
+    position:absolute; top:10px; left:50%; transform:translateX(-50%);
+    width:92%; max-width:980px; display:flex; gap:10px; align-items:center;
+    background: rgba(26,27,41,0.86); padding:10px; border-radius:12px; z-index:10;
+  }
+  .top-bar input{flex:1;padding:8px 12px;border-radius:8px;border:none;background:rgba(255,255,255,0.06);color:#fff;outline:none}
+  .top-bar button{background:none;border:none;color:var(--accent);font-weight:600;cursor:pointer}
+
+  .privacy-banner{
+    position:absolute; top:66px; left:50%; transform:translateX(-50%);
+    background: rgba(108,99,255,0.08); color:#fff; padding:8px 12px; border-radius:10px;
+    font-size:13px; z-index:10; display:flex; gap:8px; align-items:center;
+  }
+
+  /* locate btn */
+  .locate-btn{
+    position:absolute; right:16px; bottom:88px; z-index:10;
+    width:48px; height:48px; border-radius:50%; border:none; background:var(--accent);
+    color:#fff; display:flex; align-items:center; justify-content:center; cursor:pointer;
+    box-shadow:0 6px 18px rgba(0,0,0,0.4)
+  }
+
+  /* footer */
+  .footer{position:absolute;left:0;right:0;bottom:0;height:74px;background:var(--footer-bg);display:flex;justify-content:space-around;align-items:center;z-index:10}
+  .tab{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:12px;color:var(--footer-inactive);cursor:pointer;user-select:none}
+  .tab.active{color:var(--footer-active);font-weight:600}
+  .tab svg{width:22px;height:22px;fill:currentColor}
+
+  /* modals */
+  .modal-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.72);align-items:center;justify-content:center;z-index:999}
+  .modal-backdrop.show{display:flex}
+  .modal-card{width:88%;max-width:380px;background:var(--footer-bg);padding:18px;border-radius:12px;text-align:center;color:var(--text)}
+  .modal-card img.avatar{width:96px;height:96px;border-radius:50%;object-fit:cover;margin-bottom:10px}
+  .modal-actions{display:flex;gap:10px;justify-content:center;margin-top:12px}
+  .btn{border:none;padding:10px 14px;border-radius:10px;cursor:pointer;font-weight:600}
+  .btn.like{background:#ff4d85;color:#fff}
+  .btn.chat{background:var(--accent);color:#fff}
+  .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--text)}
+
+  @media(max-width:420px){
+    .top-bar{width:94%}
+    .privacy-banner{top:64px;font-size:12px}
+  }
+</style>
+</head>
+<body>
+
+  <div id="map"></div>
+
+  <!-- DOM radar element (positioned by projection) -->
+  <div id="radar" style="width:240px;height:240px;display:none"></div>
+
+  <div class="top-bar">
+    <input placeholder="Search for interests..." />
+    <button id="filtersBtn">Filters</button>
+  </div>
+
+  <div class="privacy-banner">🛡️ <span>Your location is private</span> ⓘ</div>
+
+  <button class="locate-btn" id="locateBtn" title="Go to my location">📍</button>
+
+  <div class="footer" role="navigation" aria-label="Main nav">
+    <div class="tab active" id="tab-nearby" onclick="activateTab('nearby')">
+      <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5 14.5 7.62 14.5 9 13.38 11.5 12 11.5z"/></svg>
+      Nearby
+    </div>
+    <div class="tab" id="tab-matches" onclick="activateTab('matches')">
+      <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+      Matches
+    </div>
+    <div class="tab" id="tab-chat" onclick="activateTab('chat')">
+      <svg viewBox="0 0 24 24"><path d="M20 2H4a2 2 0 0 0-2 2v16l4-4h14a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2z"/></svg>
+      Chat
+    </div>
+    <div class="tab" id="tab-places" onclick="activateTab('places')">
+      <svg viewBox="0 0 24 24"><path d="M3 3h18v2H3V3zm0 4h18v2H3V7zm0 4h18v2H3v-2zm0 4h12v2H3v-2zm0 4h12v2H3v-2z"/></svg>
+      Places
+    </div>
+    <div class="tab" id="tab-profile" onclick="activateTab('profile')">
+      <svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.9-2.2 4.9-4.9S14.7 2.2 12 2.2 7.1 4.4 7.1 7.1 9.3 12 12 12zm0 2c-3.3 0-9.9 1.7-9.9 5v3h19.8v-3c0-3.3-6.6-5-9.9-5z"/></svg>
+      Profile
+    </div>
+  </div>
+
+  <!-- Location permission modal -->
+  <div id="locationModal" class="modal-backdrop">
+    <div class="modal-card">
+      <h3>Enable Location</h3>
+      <p>Location access is required to see nearby people. Please enable GPS to continue.</p>
+      <div style="display:flex;gap:10px;justify-content:center;margin-top:10px">
+        <button class="btn ghost" onclick="closeLocationModal()">Cancel</button>
+        <button class="btn" onclick="requestLocation()">Enable GPS</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Profile modal -->
+  <div id="profileModal" class="modal-backdrop">
+    <div class="modal-card" id="profileCard" role="dialog" aria-modal="true">
+      <img id="profileAvatar" class="avatar" src="" alt="Profile photo" />
+      <h3 id="profileName">Name</h3>
+      <p id="profileAgeAndGender" style="opacity:0.9;margin-bottom:8px;"></p>
+      <p id="profileBio" style="opacity:0.85;"></p>
+      <div class="modal-actions">
+        <button class="btn like" id="likeBtn">❤️ Like</button>
+        <button class="btn chat" id="chatBtn">💬 Chat</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+/* ---------- Config ---------- */
+const GOOGLE_API_KEY = 'AIzaSyAeMqPwxibxDMwe4jmv-U5ZScyi4Lkhw98'; // you already provided this
+let map, overlay;
+let userLoc = null;
+let userMarker = null;
+let radarDom = document.getElementById('radar');
+let radarCircleOverlay = null;
+let radiusMeters = 5000; // 5 km default
+let isPremium = false; // set true to expand visibleLimit
+let otherMarkers = [];
+
+/* colors */
+const genderColors = {
+  male: '#4285F4',
+  female: '#FF4D85',
+  'non-binary': '#B74DFF',
+  nonbinary: '#B74DFF',
+  other: '#34A853'
+};
+
+/* sample user templates (server will replace these) */
+const sampleTemplates = [
+  { name:'Ella', age:25, gender:'female', online:true, bio:'Adventurous & coffee lover', photo:'https://i.pravatar.cc/150?img=47' },
+  { name:'Tumi', age:29, gender:'male', online:true, bio:'Designer • Loves music', photo:'https://i.pravatar.cc/150?img=12' },
+  { name:'Kai', age:22, gender:'non-binary', online:true, bio:'Artist • Night owl', photo:'https://i.pravatar.cc/150?img=32' },
+  { name:'Sam', age:33, gender:'other', online:false, bio:'Traveler', photo:'https://i.pravatar.cc/150?img=15' }
+];
+
+/* haversine (meters) */
+function haversineMeters(a,b){
+  const R = 6371000;
+  const φ1 = a.lat * Math.PI/180, φ2 = b.lat * Math.PI/180;
+  const Δφ = (b.lat-a.lat)*Math.PI/180, Δλ = (b.lng-a.lng)*Math.PI/180;
+  const sinΔφ = Math.sin(Δφ/2), sinΔλ = Math.sin(Δλ/2);
+  const aa = sinΔφ*sinΔφ + Math.cos(φ1)*Math.cos(φ2)*sinΔλ*sinΔλ;
+  const c = 2*Math.atan2(Math.sqrt(aa), Math.sqrt(1-aa));
+  return R*c;
+}
+
+/* ---------- initMap (global callback) ---------- */
+function initMap(){
+  map = new google.maps.Map(document.getElementById('map'), {
+    center:{lat:-26.107, lng:28.056},
+    zoom:14,
+    disableDefaultUI:true
+  });
+
+  // OverlayView used to access projection -> used to place DOM radar accurately
+  overlay = new google.maps.OverlayView();
+  overlay.onAdd = function(){ /* nothing; projection will be available after setMap */ };
+  overlay.draw = function(){ updateRadarPosition(); };
+  overlay.setMap(map);
+
+  // map idle event -> update radar position/size
+  map.addListener('idle', ()=> updateRadarPosition());
+
+  // locate button
+  document.getElementById('locateBtn').addEventListener('click', ()=> {
+    if (userLoc) map.panTo(userLoc);
+  });
+
+  // modal close when clicking backdrop
+  document.getElementById('profileModal').addEventListener('click', (e)=>{ if(e.target.id==='profileModal') closeProfileModal(); });
+  document.getElementById('locationModal').addEventListener('click', (e)=>{ if(e.target.id==='locationModal') closeLocationModal(); });
+
+  // request user location
+  requestLocation();
+}
+
+/* ---------- requestLocation ---------- */
+function requestLocation(){
+  if(!navigator.geolocation){
+    showLocationModal(); return;
+  }
+  navigator.geolocation.getCurrentPosition(pos=>{
+    userLoc = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+    map.setCenter(userLoc);
+    placeUserMarker();
+    drawMapCircle();
+    showRadarDom();
+    generateNearbyMarkers(); // demo
+  }, err=>{
+    // show enable modal
+    showLocationModal();
+  }, { enableHighAccuracy:true, timeout:10000, maximumAge:0 });
+}
+
+/* ---------- placeUserMarker (colored based on stored gender) ---------- */
+function placeUserMarker(){
+  if (userMarker) userMarker.setMap(null);
+  let ownGender = (localStorage.getItem('gender') || 'male').toLowerCase();
+  if(ownGender === 'non-binary') ownGender = 'non-binary';
+  const color = genderColors[ownGender] || genderColors.other;
+  userMarker = new google.maps.Marker({
+    position: userLoc,
+    map,
+    title: 'You',
+    icon:{
+      path: google.maps.SymbolPath.CIRCLE,
+      scale: 10,
+      fillColor: color,
+      fillOpacity: 1,
+      strokeColor: '#fff',
+      strokeWeight: 2
+    }
+  });
+}
+
+/* ---------- drawMapCircle (Google Maps circle showing radius) ---------- */
+function drawMapCircle(){
+  if (radarCircleOverlay) radarCircleOverlay.setMap(null);
+  radarCircleOverlay = new google.maps.Circle({
+    strokeColor: '#ff4d85',
+    strokeOpacity: 0.35,
+    strokeWeight: 2,
+    fillColor: '#ff4d85',
+    fillOpacity: 0.06,
+    map,
+    center: userLoc,
+    radius: radiusMeters
+  });
+}
+
+/* ---------- DOM Radar show ---------- */
+function showRadarDom(){
+  radarDom.style.display = 'block';
+  updateRadarPosition();
+}
+
+/* ---------- updateRadarPosition: position & size radar DOM via projection ---------- */
+function updateRadarPosition(){
+  if (!userLoc || !overlay || !overlay.getProjection) return;
+  const proj = overlay.getProjection();
+  if (!proj) return;
+  const latLng = new google.maps.LatLng(userLoc.lat, userLoc.lng);
+  const pixel = proj.fromLatLngToDivPixel(latLng);
+  if (!pixel) return;
+
+  // place radar center at pixel
+  radarDom.style.left = pixel.x + 'px';
+  radarDom.style.top = pixel.y + 'px';
+
+  // meters per pixel at current zoom & latitude
+  const zoom = map.getZoom();
+  const metersPerPx = 156543.03392 * Math.cos(userLoc.lat * Math.PI/180) / Math.pow(2, zoom);
+  const pixelRadius = Math.round(radiusMeters / metersPerPx);
+  const size = Math.max(80, pixelRadius*2); // at least 80px
+  radarDom.style.width = size + 'px';
+  radarDom.style.height = size + 'px';
+  radarDom.style.borderRadius = (size/2) + 'px';
+}
+
+/* ---------- generateNearbyMarkers (demo) ---------- */
+function generateNearbyMarkers(){
+  // clear existing
+  otherMarkers.forEach(m=>m.setMap(null));
+  otherMarkers = [];
+
+  // create user instances from templates with random offset within ~4500m
+  const generated = [];
+  sampleTemplates.forEach(t => {
+    if (!t) return;
+    // create 1 instance per template
+    const r = Math.random() * 4500; // meters offset (up to ~4.5 km)
+    const bearing = Math.random()*360;
+    const pt = destPoint(userLoc.lat, userLoc.lng, r, bearing);
+    generated.push({ ...t, lat: pt.lat, lng: pt.lng });
+  });
+
+  // add markers for online users inside radius
+  generated.forEach(u=>{
+    if (!u.online) return;
+    const d = haversineMeters(userLoc, { lat:u.lat, lng:u.lng });
+    const visibleLimit = isPremium ? Math.max(radiusMeters, 30000) : radiusMeters;
+    if (d <= visibleLimit){
+      const color = genderColors[u.gender] || genderColors.other;
+      const m = new google.maps.Marker({
+        position: { lat:u.lat, lng:u.lng },
+        map,
+        icon: {
+          path: google.maps.SymbolPath.CIRCLE,
+          scale: 8,
+          fillColor: color,
+          fillOpacity: 1,
+          strokeColor: '#fff',
+          strokeWeight: 1.5
+        }
+      });
+      m.addListener('click', ()=> openProfileModal(u));
+      otherMarkers.push(m);
+    }
+  });
+}
+
+/* ---------- openProfileModal ---------- */
+function openProfileModal(user){
+  document.getElementById('profileAvatar').src = user.photo || 'https://via.placeholder.com/150';
+  document.getElementById('profileName').textContent = user.name || 'Unknown';
+  document.getElementById('profileAgeAndGender').textContent = `${user.age ? user.age + ' yrs' : ''}${user.gender ? ' • ' + user.gender : ''}`;
+  document.getElementById('profileBio').textContent = user.bio || '';
+  document.getElementById('profileModal').classList.add('show');
+  document.getElementById('profileModal').classList.add('show'); // ensure visible
+  document.getElementById('profileModal').classList.add('show'); // defensive
+  document.getElementById('profileModal').classList.add('show');
+  document.getElementById('profileModal').classList.add('show');
+  document.getElementById('profileModal').classList.add('show');
+  document.getElementById('profileModal').classList.add('show');
+  // show backdrop
+  document.getElementById('profileModal').classList.add('show');
+}
+/* close:
+   click outside handled in initMap listener
+*/
+function closeProfileModal(){ document.getElementById('profileModal').classList.remove('show'); }
+
+/* ---------- location modal control ---------- */
+function showLocationModal(){ document.getElementById('locationModal').classList.add('show'); }
+function closeLocationModal(){ document.getElementById('locationModal').classList.remove('show'); }
+
+/* ---------- destPoint: move from lat/lng by distance (m) at bearing (deg) ---------- */
+function destPoint(lat, lng, distance, bearing){
+  const R = 6371000;
+  const δ = distance / R;
+  const θ = bearing * Math.PI/180;
+  const φ1 = lat * Math.PI/180;
+  const λ1 = lng * Math.PI/180;
+  const φ2 = Math.asin(Math.sin(φ1)*Math.cos(δ) + Math.cos(φ1)*Math.sin(δ)*Math.cos(θ));
+  const λ2 = λ1 + Math.atan2(Math.sin(θ)*Math.sin(δ)*Math.cos(φ1), Math.cos(δ)-Math.sin(φ1)*Math.sin(φ2));
+  return { lat: φ2 * 180/Math.PI, lng: λ2 * 180/Math.PI };
+}
+
+/* ---------- activateTab ---------- */
+function activateTab(key){
+  document.querySelectorAll('.footer .tab').forEach(t=>t.classList.remove('active'));
+  const el = document.getElementById('tab-'+key);
+  if (el) el.classList.add('active');
+  // navigation behavior: only Nearby stays (others navigate to pages)
+  if (key !== 'nearby') window.location.href = key + '.html';
+}
+
+/* ---------- requestLocation accessible from modal button ---------- */
+window.requestLocation = requestLocation;
+
+/* ---------- expose initMap for callback ---------- */
+window.initMap = initMap;
+
+</script>
+
+<!-- Google Maps JS (default style) -->
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAeMqPwxibxDMwe4jmv-U5ZScyi4Lkhw98&callback=initMap"></script>
+</body>
+</html>

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Proximate Splash</title>
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+      background-color: #000010;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    #splashVideo, #fallbackLogo {
+      max-width: 80%;
+      max-height: 80%;
+      opacity: 1;
+      transition: opacity 1s ease-out;
+    }
+
+    #splashVideo.fade-out, #fallbackLogo.fade-out {
+      opacity: 0;
+    }
+  </style>
+</head>
+<body>
+  <!-- Animated Logo Video -->
+  <video autoplay muted playsinline id="splashVideo">
+    <source src="icons/logo-animation.mp4" type="video/mp4">
+  </video>
+
+  <!-- Fallback Logo -->
+  <img id="fallbackLogo" src="icons/logo-fallback.png" alt="Proximate Logo" style="display:none;">
+
+  <script>
+    const video = document.getElementById("splashVideo");
+    const fallback = document.getElementById("fallbackLogo");
+
+    // If video fails to play, show fallback
+    video.onerror = () => {
+      video.style.display = "none";
+      fallback.style.display = "block";
+    };
+
+    // After 6 seconds, fade out and redirect
+    setTimeout(() => {
+      // Fade out video or fallback
+      if(video.style.display !== "none") {
+        video.classList.add("fade-out");
+      } else {
+        fallback.classList.add("fade-out");
+      }
+
+      // Redirect after fade
+      setTimeout(() => {
+        window.location.href = "onboarding.html";
+      }, 1000); // 1s fade duration
+    }, 6000); // Display duration
+  </script>
+</body>
+</html>
