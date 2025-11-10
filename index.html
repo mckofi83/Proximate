@@ -1,66 +1,16 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Proximate</title>
-  <style>
-    /* Full-screen layout */
-    html, body {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      width: 100%;
-      background-color: #000010; /* deep night background */
-      overflow: hidden;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-family: "Poppins", sans-serif;
-    }
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Proximate</title>
+    <link rel="icon" href="/favicon.ico" />
+  </head>
+  <body>
+    <div id="root"></div>
 
-    /* Splash video */
-    #splash-video {
-      max-width: 70vw;
-      max-height: 50vh;
-      width: 300px;
-      height: auto;
-      opacity: 0;
-      animation: fadeIn 1.5s ease forwards; /* fade-in effect */
-      transition: opacity 1s ease; /* fade-out */
-    }
+    <!-- INJECT_MAPS_KEY -->
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: scale(0.95); }
-      to { opacity: 1; transform: scale(1); }
-    }
-
-    /* Responsive tweak for smaller screens */
-    @media (max-width: 600px) {
-      #splash-video {
-        max-width: 80vw;
-        max-height: 40vh;
-      }
-    }
-  </style>
-</head>
-<body>
-  <!-- Splash animation -->
-  <video id="splash-video" autoplay muted playsinline>
-    <source src="icons/logo-animation2.mp4" type="video/mp4">
-    Your browser does not support the video tag.
-  </video>
-
-  <script>
-    const video = document.getElementById('splash-video');
-
-    // Fade out and redirect after 6 seconds
-    setTimeout(() => {
-      video.style.opacity = 0;
-      setTimeout(() => {
-        window.location.href = "onboarding.html"; // 👈 change to your next screen
-      }, 1000); // match fade-out duration
-    }, 6000); // 6 seconds splash duration
-  </script>
-</body>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
 </html>
