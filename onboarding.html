@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Proximate — Login</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root { 
+      --accent:#6c63ff; 
+      --bg:#000010; 
+      --magenta:#d633ff;
+      --yellow:#FFD700;
+    }
+    body,html{
+      margin:0;
+      padding:0;
+      height:100%;
+      background:var(--bg);
+      font-family:Poppins,sans-serif;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      text-align:center;
+      color:#fff;
+    }
+    .auth-container{
+      width:90%;
+      max-width:400px;
+    }
+    .logo{
+      width:280px;
+      margin:0 auto 20px;
+      display:block;
+    }
+    h1{
+      font-size:26px;
+      margin-bottom:15px;
+      font-weight:600;
+    }
+    .input-field{
+      width:100%;
+      padding:14px 16px;
+      margin:4px 0;
+      border-radius:12px;
+      border:1px solid rgba(214,51,255,0.3); /* faint magenta outline */
+      background:rgba(255,255,255,0.08);
+      color:white;
+      font-size:16px;
+      outline:none;
+      box-sizing:border-box;
+      transition:border .3s;
+    }
+    .input-field:focus{
+      border:1px solid rgba(255,215,0,0.6); /* faint yellow when focused */
+    }
+    .input-error{
+      border:1px solid #ff4d4d;
+    }
+    .error-msg{
+      font-size:13px;
+      color:#ff4d4d;
+      height:16px;
+      margin-bottom:6px;
+      text-align:left;
+    }
+    .password-wrap{
+      position:relative;
+      width:100%;
+      margin:10px 0;
+    }
+    .password-wrap input{
+      width:100%;
+      padding-right:50px;
+    }
+    .eye-btn{
+      position:absolute;
+      right:10px;
+      top:50%;
+      transform:translateY(-50%);
+      width:42px;
+      height:42px;
+      border-radius:8px;
+      border:none;
+      background:rgba(255,255,255,0.05);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+      color:white;
+    }
+    .eye-btn:focus{
+      outline:none;
+      border:none;
+    }
+
+    .btn{
+      width:100%;
+      padding:14px;
+      margin:16px 0 8px 0;
+      border:none;
+      border-radius:12px;
+      font-size:16px;
+      font-weight:600;
+      cursor:pointer;
+      transition:opacity .3s;
+    }
+    .btn:hover{
+      opacity:0.9;
+    }
+
+    .btn-primary{
+      background:linear-gradient(90deg, #FFD700, #FF8C00);
+      color:black;
+    }
+
+    .btn-google{
+      background:linear-gradient(90deg, #d633ff, #ff66cc);
+      color:white;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      margin:10px 0;
+      border:none;
+      transition:transform .2s, opacity .3s;
+    }
+    .btn-google:hover{
+      transform:scale(1.02);
+      opacity:0.95;
+    }
+    .btn-google img{
+      width:20px;
+      height:20px;
+    }
+
+    /* 🟡 Yellow links */
+    .link {
+      color: #FFD700;
+      text-decoration: none;
+      font-weight: 600;
+      display: inline-block;
+      font-size: 14px;
+      transition: color .3s;
+    }
+    .link:hover {
+      color: #fff6b0;
+      text-decoration: underline;
+    }
+
+    .disclaimer {
+      font-size: 13px;
+      color: #bdbdbd;
+      margin-top: 20px;
+      line-height: 1.4;
+    }
+    .disclaimer a {
+      color: #FFD700;
+      text-decoration: none;
+      font-weight: 600;
+      transition: color .3s;
+    }
+    .disclaimer a:hover {
+      color: #fff6b0;
+      text-decoration: underline;
+    }
+
+    /* Remember + Forgot Password */
+    .remember-forgot {
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-top:8px;
+    }
+
+    .remember-me {
+      display:flex;
+      align-items:center;
+      gap:8px;
+      font-size:13px;
+      color:#bdbdbd;
+    }
+
+    #rememberMe:checked {
+      accent-color: var(--magenta);
+    }
+
+    #forgotPwd {
+      font-size:13px;
+      font-weight:600;
+      color: var(--yellow);
+      text-decoration:none;
+      transition: color .3s;
+    }
+
+    #forgotPwd:hover{
+      color:#fff6b0;
+      text-decoration:underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="auth-container">
+    <img src="icons/logo-fallback.png" alt="Proximate Logo" class="logo">
+    <h1>Welcome Back</h1>
+
+    <input id="email" type="email" class="input-field" placeholder="Email" autocomplete="email">
+    <div id="emailError" class="error-msg"></div>
+
+    <div class="password-wrap">
+      <input id="password" type="password" class="input-field" placeholder="Password" autocomplete="current-password">
+      <button id="togglePwd" class="eye-btn" type="button">👁️</button>
+    </div>
+    <div id="passwordError" class="error-msg"></div>
+
+    <div class="remember-forgot">
+      <div class="remember-me">
+        <input type="checkbox" id="rememberMe">
+        <label for="rememberMe">Remember Me</label>
+      </div>
+      <a href="#" id="forgotPwd">Forgot Password?</a>
+    </div>
+
+    <button id="loginBtn" class="btn btn-primary">Login</button>
+
+    <button id="googleLoginBtn" class="btn btn-google">
+      <img src="icons/google-icon.png" alt="Google Icon"> Continue with Google
+    </button>
+
+    <div class="disclaimer">
+      Don't have an account? <a href="signup.html" class="link">Sign up</a>
+    </div>
+
+    <div class="disclaimer">
+      By continuing, you agree to our
+      <a href="terms.html" target="_blank" rel="noopener">Terms of Service</a> and
+      <a href="privacy.html" target="_blank" rel="noopener">Privacy Policy</a>.
+    </div>
+  </div>
+
+  <!-- Firebase Login Script -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithRedirect, getRedirectResult, onAuthStateChanged, setPersistence, browserLocalPersistence, browserSessionPersistence, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+    import { getFirestore, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDufrcpZw20SBe72ZNGX5iJCfBcxVLLZmk",
+      authDomain: "proximate-3f8cd.firebaseapp.com",
+      projectId: "proximate-3f8cd",
+      storageBucket: "proximate-3f8cd.firebasestorage.app",
+      messagingSenderId: "258415586099",
+      appId: "1:258415586099:web:34bfc4907fe4cf50aa6c46",
+      measurementId: "G-6VT3NXZKHS"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // Password toggle
+    const toggleBtn = document.getElementById('togglePwd');
+    const pwdInput = document.getElementById('password');
+    let pwdVisible = false;
+    toggleBtn.addEventListener('click',()=>{
+      pwdVisible = !pwdVisible;
+      pwdInput.type = pwdVisible ? 'text' : 'password';
+      toggleBtn.textContent = pwdVisible ? '🙈' : '👁️';
+    });
+
+    onAuthStateChanged(auth,user=>{
+      if(user){ window.location.href='dashboard.html'; }
+    });
+
+    getRedirectResult(auth).then(result=>{
+      if(result.user){
+        saveUserProfile(result.user,"google");
+        window.location.href='dashboard.html';
+      }
+    }).catch(err=>console.error("Redirect error:", err));
+
+    async function saveUserProfile(user,method="email"){
+      try{
+        const userRef = doc(db,"users",user.uid);
+        await setDoc(userRef,{
+          uid: user.uid,
+          name: user.displayName || "",
+          email: user.email,
+          photoURL: user.photoURL || null,
+          lastLogin: serverTimestamp(),
+          signupMethod: method
+        },{merge:true});
+      }catch(err){console.error("Firestore error:",err);}
+    }
+
+    document.getElementById('loginBtn').addEventListener('click',async()=>{
+      const emailField = document.getElementById('email');
+      const passwordField = pwdInput;
+      const rememberMe = document.getElementById('rememberMe').checked;
+      const emailError = document.getElementById('emailError');
+      const passwordError = document.getElementById('passwordError');
+
+      emailError.textContent=""; passwordError.textContent="";
+      [emailField,passwordField].forEach(f=>f.classList.remove('input-error'));
+
+      let valid=true;
+      if(!emailField.value.trim()){emailError.textContent="Please enter your email"; emailField.classList.add('input-error'); valid=false;}
+      if(!passwordField.value){passwordError.textContent="Please enter your password"; passwordField.classList.add('input-error'); valid=false;}
+      if(!valid) return;
+
+      try{
+        await setPersistence(auth, rememberMe ? browserLocalPersistence : browserSessionPersistence);
+        const userCredential = await signInWithEmailAndPassword(auth,emailField.value.trim(),passwordField.value);
+        saveUserProfile(userCredential.user,"email");
+        window.location.href='dashboard.html';
+      }catch(err){console.error(err); alert(err.message);}
+    });
+
+    document.getElementById('googleLoginBtn').addEventListener('click',()=>{
+      const provider = new GoogleAuthProvider();
+      const rememberMe = document.getElementById('rememberMe').checked;
+      setPersistence(auth, rememberMe ? browserLocalPersistence : browserSessionPersistence)
+        .then(()=> signInWithRedirect(auth,provider))
+        .catch(err=>console.error(err));
+    });
+
+    document.getElementById('forgotPwd').addEventListener('click',async(e)=>{
+      e.preventDefault();
+      const emailField = document.getElementById('email');
+      if(!emailField.value.trim()){
+        emailField.classList.add('input-error'); 
+        document.getElementById('emailError').textContent="Enter your email first"; 
+        return;
+      }
+      try{
+        await sendPasswordResetEmail(auth,emailField.value.trim());
+        alert('Password reset email sent.');
+      }catch(err){console.error(err); alert(err.message);}
+    });
+  </script>
+</body>
+</html>

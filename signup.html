@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Proximate — Sign Up</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #000010;
+      --yellow: #FFD700;
+      --orange: #FF8C00;
+      --btn-gradient: linear-gradient(90deg, #FFD700, #FF8C00);
+    }
+
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background: var(--bg);
+      font-family: "Poppins", sans-serif;
+      text-align: center;
+      color: #fff;
+      overflow-y: auto;
+      display: flex;
+      justify-content: center;
+    }
+
+    .auth-container {
+      width: 90%;
+      max-width: 400px;
+      margin-top: 40px;
+      margin-bottom: 60px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      animation: fadeIn 1.2s ease both;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .logo {
+      width: 280px;
+      margin-bottom: 15px;
+    }
+
+    h1 {
+      font-size: 26px;
+      margin-bottom: 15px;
+      font-weight: 600;
+    }
+
+    .input-field {
+      width: 100%;
+      padding: 14px 16px;
+      margin: 12px 0;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 0, 204, 0.25);
+      background: rgba(255, 255, 255, 0.08);
+      color: white;
+      font-size: 16px;
+      outline: none;
+      box-sizing: border-box;
+      transition: border 0.3s, box-shadow 0.3s;
+    }
+
+    .input-field:focus {
+      border: 1px solid var(--yellow);
+      box-shadow: 0 0 4px var(--yellow);
+    }
+
+    .input-error {
+      border: 1px solid #ff4d4d !important;
+      box-shadow: 0 0 4px #ff4d4d !important;
+    }
+
+    .error-msg {
+      font-size: 13px;
+      color: #ff4d4d;
+      height: 16px;
+      margin-bottom: 4px;
+      text-align: left;
+    }
+
+    .password-wrap {
+      position: relative;
+      width: 100%;
+    }
+
+    .eye-btn {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 42px;
+      height: 42px;
+      border-radius: 8px;
+      border: none;
+      background: rgba(255, 255, 255, 0.05);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 14px;
+      margin: 16px 0;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.3s;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(255, 140, 0, 0.3);
+    }
+
+    .btn-primary {
+      background: var(--btn-gradient);
+      color: black;
+    }
+
+    .btn-google {
+      background: linear-gradient(90deg, #ff00cc, #ff66cc);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 10px;
+      margin-bottom: 8px; /* tighter spacing */
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .btn-google img {
+      width: 20px;
+      height: 20px;
+    }
+
+    .btn-google:hover {
+      box-shadow: 0 0 10px rgba(255, 0, 204, 0.4);
+    }
+
+    .login-link {
+      font-size: 14px;
+      margin-top: 0;
+      margin-bottom: 16px;
+      color: #fff;
+    }
+
+    .login-link a {
+      color: var(--yellow);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .login-link a:hover {
+      text-decoration: underline;
+    }
+
+    .disclaimer {
+      font-size: 13px;
+      color: #bdbdbd;
+      margin-top: 20px;
+      line-height: 1.4;
+      text-align: center;
+    }
+
+    .disclaimer a {
+      color: var(--yellow);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .disclaimer a:hover {
+      text-decoration: underline;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-6px); }
+      40%, 80% { transform: translateX(6px); }
+    }
+
+    .shake {
+      animation: shake 0.4s ease;
+    }
+  </style>
+</head>
+<body>
+  <div class="auth-container">
+    <img src="icons/logo-fallback.png" alt="Proximate Logo" class="logo" />
+    <h1>Create Account</h1>
+
+    <input id="name" type="text" class="input-field" placeholder="Full Name" />
+    <div id="nameError" class="error-msg"></div>
+
+    <input id="email" type="email" class="input-field" placeholder="Email" autocomplete="email" />
+    <div id="emailError" class="error-msg"></div>
+
+    <div class="password-wrap">
+      <input id="password" type="password" class="input-field" placeholder="Password" autocomplete="new-password" />
+      <button id="togglePwd" class="eye-btn" type="button">👁️</button>
+    </div>
+    <div id="passwordError" class="error-msg"></div>
+
+    <div class="password-wrap">
+      <input id="confirmPassword" type="password" class="input-field" placeholder="Confirm Password" autocomplete="new-password" />
+      <button id="toggleConfirmPwd" class="eye-btn" type="button">👁️</button>
+    </div>
+    <div id="confirmPasswordError" class="error-msg"></div>
+
+    <button id="signupBtn" class="btn btn-primary">Sign Up</button>
+
+    <button id="googleSignupBtn" class="btn btn-google">
+      <img src="icons/google-icon.png" alt="Google Icon" /> Continue with Google
+    </button>
+
+    <div class="login-link">
+      Already have an account? <a href="onboarding.html">Login</a>
+    </div>
+
+    <div class="disclaimer">
+      By continuing, you agree to our
+      <a href="terms.html" target="_blank" rel="noopener">Terms of Service</a> and
+      <a href="privacy.html" target="_blank" rel="noopener">Privacy Policy</a>.
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithRedirect, getRedirectResult, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+    import { getFirestore, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDufrcpZw20SBe72ZNGX5iJCfBcxVLLZmk",
+      authDomain: "proximate-3f8cd.firebaseapp.com",
+      projectId: "proximate-3f8cd",
+      storageBucket: "proximate-3f8cd.firebasestorage.app",
+      messagingSenderId: "258415586099",
+      appId: "1:258415586099:web:34bfc4907fe4cf50aa6c46",
+      measurementId: "G-6VT3NXZKHS"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    const pwdInput = document.getElementById("password");
+    const confirmPwdInput = document.getElementById("confirmPassword");
+
+    document.getElementById("togglePwd").addEventListener("click", () => {
+      const visible = pwdInput.type === "text";
+      pwdInput.type = visible ? "password" : "text";
+      togglePwd.textContent = visible ? "👁️" : "🙈";
+    });
+
+    document.getElementById("toggleConfirmPwd").addEventListener("click", () => {
+      const visible = confirmPwdInput.type === "text";
+      confirmPwdInput.type = visible ? "password" : "text";
+      toggleConfirmPwd.textContent = visible ? "👁️" : "🙈";
+    });
+
+    onAuthStateChanged(auth, (user) => {
+      if (user) window.location.href = "dashboard.html";
+    });
+
+    async function saveUserProfile(user, method = "email") {
+      const userRef = doc(db, "users", user.uid);
+      await setDoc(userRef, {
+        uid: user.uid,
+        name: user.displayName || document.getElementById("name").value.trim(),
+        email: user.email,
+        photoURL: user.photoURL || null,
+        signupMethod: method,
+        createdAt: serverTimestamp(),
+      }, { merge: true });
+    }
+
+    document.getElementById("signupBtn").addEventListener("click", async () => {
+      const name = document.getElementById("name");
+      const email = document.getElementById("email");
+      const password = pwdInput;
+      const confirmPassword = confirmPwdInput;
+
+      const nameErr = document.getElementById("nameError");
+      const emailErr = document.getElementById("emailError");
+      const pwdErr = document.getElementById("passwordError");
+      const confirmErr = document.getElementById("confirmPasswordError");
+
+      [nameErr, emailErr, pwdErr, confirmErr].forEach(e => e.textContent = "");
+      [name, email, password, confirmPassword].forEach(f => f.classList.remove("input-error", "shake"));
+
+      let valid = true;
+      if (!name.value.trim()) { nameErr.textContent = "Enter your name"; name.classList.add("input-error"); valid = false; }
+      if (!email.value.trim()) { emailErr.textContent = "Enter your email"; email.classList.add("input-error"); valid = false; }
+      if (!password.value) { pwdErr.textContent = "Enter a password"; password.classList.add("input-error"); valid = false; }
+      if (password.value !== confirmPassword.value) {
+        confirmErr.textContent = "Passwords do not match";
+        confirmPassword.classList.add("input-error", "shake");
+        setTimeout(() => confirmPassword.classList.remove("shake"), 400);
+        valid = false;
+      }
+
+      if (!valid) return;
+
+      try {
+        const cred = await createUserWithEmailAndPassword(auth, email.value.trim(), password.value);
+        await updateProfile(cred.user, { displayName: name.value.trim() });
+        await saveUserProfile(cred.user, "email");
+        window.location.href = "dashboard.html";
+      } catch (err) {
+        alert(err.message);
+        console.error(err);
+      }
+    });
+
+    document.getElementById("googleSignupBtn").addEventListener("click", () => {
+      const provider = new GoogleAuthProvider();
+      signInWithRedirect(auth, provider);
+    });
+
+    getRedirectResult(auth)
+      .then(result => { if (result.user) { saveUserProfile(result.user, "google"); window.location.href = "dashboard.html"; } })
+      .catch(err => console.error("Redirect error:", err));
+  </script>
+</body>
+</html>
