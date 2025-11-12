@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Proximate — Enable GPS</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root { 
+      --bg: #000010; 
+      --yellow: #FFD700;
+      --magenta: #d633ff;
+      --btn-gradient: linear-gradient(90deg, #FFD700, #FF8C00);
+    }
+
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background: var(--bg);
+      font-family: "Poppins", sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      color: #fff;
+    }
+
+    .container {
+      width: 90%;
+      max-width: 400px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      animation: fadeIn 1s ease forwards;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .logo {
+      width: 280px;
+      margin-bottom: 30px;
+    }
+
+    h1 {
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+
+    p {
+      font-size: 14px;
+      color: #bdbdbd;
+      margin-bottom: 20px;
+    }
+
+    .disclaimer {
+      font-size: 13px;
+      color: var(--magenta);
+      margin-top: 20px;
+      line-height: 1.4;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 14px;
+      margin: 8px 0;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.3s;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(255, 140, 0, 0.3);
+    }
+
+    .btn-primary {
+      background: var(--btn-gradient);
+      color: black;
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.08);
+      color: #fff;
+    }
+
+    .input-field {
+      width: 100%;
+      padding: 14px 16px;
+      margin: 8px 0;
+      border-radius: 12px;
+      border: 1px solid rgba(214,51,255,0.3);
+      background: rgba(255, 255, 255, 0.08);
+      color: #fff;
+      font-size: 16px;
+      outline: none;
+      box-sizing: border-box;
+      transition: border 0.3s, box-shadow 0.3s;
+    }
+
+    .input-field:focus {
+      border: 1px solid var(--yellow);
+      box-shadow: 0 0 4px var(--yellow);
+    }
+
+    .input-error {
+      border: 1px solid #ff4d4d;
+    }
+
+    .error-msg {
+      font-size: 13px;
+      color: #ff4d4d;
+      height: 16px;
+      text-align: left;
+      margin-bottom: 4px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <img src="icons/logo-fallback.png" alt="Proximate Logo" class="logo">
+    <h1>Enable Your Location</h1>
+    <p>This will grant you access to see nearby matches and the ability to check-in at places.</p>
+
+    <button id="enableGpsBtn" class="btn btn-primary">Enable GPS</button>
+    <button id="skipBtn" class="btn btn-secondary">Skip</button>
+
+    <div class="disclaimer">
+      🛡 Your exact location is never shared with others.
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('enableGpsBtn').addEventListener('click', () => {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          position => {
+            console.log("Latitude:", position.coords.latitude, "Longitude:", position.coords.longitude);
+            alert("GPS enabled successfully!");
+            window.location.href = "dashboard.html";
+          },
+          error => {
+            alert("GPS access denied or unavailable.");
+          }
+        );
+      } else {
+        alert("Geolocation is not supported by this browser.");
+      }
+    });
+
+    document.getElementById('skipBtn').addEventListener('click', () => {
+      window.location.href = "dashboard.html";
+    });
+  </script>
+</body>
+</html>
